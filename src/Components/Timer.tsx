@@ -1,8 +1,6 @@
 import React from "react";
 import { styled } from "styled-components";
 
-// ## TODO - gradient 쪽 CSS 수정
-
 const TimerDiv = styled.div`
   width: 500px;
   position: relative;
@@ -34,23 +32,17 @@ const Lines = styled.div<{ isThickLine?: boolean; degree: number }>`
   transform: rotate(${(props) => props.degree}deg);
 `;
 
-const LineCover = styled.div<{ percent: number }>`
+const LineCover = styled.div<{ deg: number }>`
   width: calc(80% - 4%);
   position: absolute;
   height: calc(80% - 4%);
   z-index: 600;
-  background-color: red;
+  background-color: white;
   border-radius: 50%;
-  background-image: linear-gradient(
-      ${(props) => props.percent}deg,
-      transparent 50%,
-      ${(props) => (props.percent > 180 ? "red" : "white")} 50%
-    ),
-    linear-gradient(
-      90deg,
-      ${(props) => (props.percent > 180 ? "red" : "white")} 50%,
-      transparent 50%
-    );
+  background-image: conic-gradient(
+    red ${(props) => props.deg}deg,
+    white ${(props) => props.deg}deg ${(props) => 360 - props.deg}deg
+  );
 `;
 
 const NumberBox = styled.div<{ degree: number }>`
@@ -102,8 +94,7 @@ const ProgressIndicator = ({
 }: {
   percent: number;
 }): React.ReactElement => {
-  const piePercent = percent * 0.01 * 360 + 90;
-  return <LineCover percent={piePercent} />;
+  return <LineCover deg={percent}></LineCover>;
 };
 
 const Timer = () => {
@@ -120,7 +111,7 @@ const Timer = () => {
     <TimerDiv>
       <MinutesIndicator />
       <LineWrapper />
-      <ProgressIndicator percent={60} />
+      <ProgressIndicator percent={2} />
       <TimerCenter />
     </TimerDiv>
   );
