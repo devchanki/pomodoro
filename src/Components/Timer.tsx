@@ -12,7 +12,7 @@ const TimerDiv = styled.div`
   align-items: center;
 `;
 
-const TimerCenter = styled.div`
+const TimerCenter = React.memo(styled.div`
   width: 20%;
   height: 20%;
   display: grid;
@@ -21,7 +21,7 @@ const TimerCenter = styled.div`
   border: 0.3rem solid black;
   border-radius: 50%;
   z-index: 1000;
-`;
+`);
 
 const Lines = styled.div<{ isThickLine?: boolean; degree: number }>`
   width: ${(props) => (props.isThickLine ? "3px" : "1px")};
@@ -56,12 +56,12 @@ const NumberBox = styled.div<{ degree: number }>`
   flex-direction: column;
 `;
 
-const NumberText = styled.span<{ degree: number }>`
+const NumberText = React.memo(styled.span<{ degree: number }>`
   transform: rotate(${(props) => props.degree}deg);
   font-weight: 600;
-`;
+`);
 
-const MinutesIndicator = () => {
+const MinutesIndicator = React.memo(() => {
   const count = 6;
   return (
     <>
@@ -75,9 +75,9 @@ const MinutesIndicator = () => {
       })}
     </>
   );
-};
+});
 
-const LineWrapper = () => {
+const LineWrapper = React.memo(() => {
   const count = 30;
   return (
     <>
@@ -87,7 +87,7 @@ const LineWrapper = () => {
       })}
     </>
   );
-};
+});
 
 const ProgressIndicator = ({
   percent,
@@ -98,7 +98,7 @@ const ProgressIndicator = ({
 };
 
 const Timer = () => {
-  const [date, setDate] = React.useState(25 * 60);
+  const [date, setDate] = React.useState(100);
   React.useEffect(() => {
     const interval = setInterval(() => {
       setDate((date) => date - 1);
@@ -111,7 +111,7 @@ const Timer = () => {
     <TimerDiv>
       <MinutesIndicator />
       <LineWrapper />
-      <ProgressIndicator percent={2} />
+      <ProgressIndicator percent={date} />
       <TimerCenter />
     </TimerDiv>
   );
