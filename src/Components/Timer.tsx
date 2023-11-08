@@ -1,5 +1,7 @@
-import React from "react";
-import { styled } from "styled-components";
+import React from 'react';
+import { styled } from 'styled-components';
+import useTimer from '../hooks/useTimer';
+import { secondToMinutesTextFormat } from '../helpers';
 
 const TimerDiv = styled.div`
   width: 500px;
@@ -24,12 +26,12 @@ const TimerCenter = React.memo(styled.div`
 `);
 
 const Lines = styled.div<{ isThickLine?: boolean; degree: number }>`
-  width: ${(props) => (props.isThickLine ? "3px" : "1px")};
+  width: ${props => (props.isThickLine ? '3px' : '1px')};
   background-color: black;
   height: calc(80%);
   z-index: 500;
   position: absolute;
-  transform: rotate(${(props) => props.degree}deg);
+  transform: rotate(${props => props.degree}deg);
 `;
 
 const LineCover = styled.div<{ deg: number }>`
@@ -40,8 +42,8 @@ const LineCover = styled.div<{ deg: number }>`
   background-color: white;
   border-radius: 50%;
   background-image: conic-gradient(
-    red ${(props) => props.deg}deg,
-    white ${(props) => props.deg}deg ${(props) => 360 - props.deg}deg
+    red ${props => props.deg}deg,
+    white ${props => props.deg}deg ${props => 360 - props.deg}deg
   );
 `;
 
@@ -49,7 +51,7 @@ const NumberBox = styled.div<{ degree: number }>`
   position: absolute;
   display: flex;
   height: calc(95%);
-  transform: rotate(${(props) => props.degree}deg);
+  transform: rotate(${props => props.degree}deg);
   font-size: 1.2em;
   z-index: 600;
   justify-content: space-between;
@@ -57,7 +59,7 @@ const NumberBox = styled.div<{ degree: number }>`
 `;
 
 const NumberText = React.memo(styled.span<{ degree: number }>`
-  transform: rotate(${(props) => props.degree}deg);
+  transform: rotate(${props => props.degree}deg);
   font-weight: 600;
 `);
 
@@ -83,37 +85,51 @@ const LineWrapper = React.memo(() => {
     <>
       {[...Array(count)].map((el, index) => {
         const isThickLine = index % 5 === 0;
-        return <Lines isThickLine={isThickLine} degree={index * 6}></Lines>;
+        return (
+          <Lines
+            key={index}
+            isThickLine={isThickLine}
+            degree={index * 6}
+          ></Lines>
+        );
       })}
     </>
   );
 });
 
 const ProgressIndicator = ({
-  percent,
+  second,
 }: {
-  percent: number;
+  second: number;
 }): React.ReactElement => {
-  return <LineCover deg={percent}></LineCover>;
+  // 360 도가 1시간 1초는 0.1도
+  const deg = Math.floor(second * 0.1);
+  return <LineCover deg={deg}></LineCover>;
 };
 
 const Timer = () => {
-  const [date, setDate] = React.useState(100);
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setDate((date) => date - 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { isRunning, setIsRunning, reset, currentTime } = useTimer();
 
   return (
-    <TimerDiv>
-      <MinutesIndicator />
-      <LineWrapper />
-      <ProgressIndicator percent={date} />
-      <TimerCenter />
-    </TimerDiv>
+    <>
+      <TimerDiv>
+        <MinutesIndicator />
+        <LineWrapper />
+        <ProgressIndicator second={currentTime} />
+        <TimerCenter />
+      </TimerDiv>
+
+      <div style={{ display: 'block', textAlign: 'center' }}>
+        {secondToMinutesTextFormat(currentTime)}
+      </div>
+
+      <input
+        type="button"
+        onClick={() => setIsRunning(!isRunning)}
+        value={isRunning ? '일시 정지' : '시작'}
+      />
+      <input type="button" onClick={() => reset()} value={'초기화'} />
+    </>
   );
 };
 export default Timer;
