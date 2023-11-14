@@ -38,8 +38,8 @@ jobs:
         with:
           node-version: '18'
       - name: Install Dependencies
-        run: npm run build
-      - name: Upload artifact
+        run: npm install && npm run build
+      - name: Upload artifact 
         uses: actions/upload-pages-artifact@v2
         with:
           # Upload entire repository
